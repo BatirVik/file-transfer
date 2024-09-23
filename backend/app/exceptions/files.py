@@ -1,0 +1,2 @@
+class MissingFilename(Exception):
+    pass
