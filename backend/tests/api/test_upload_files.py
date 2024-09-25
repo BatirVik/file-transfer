@@ -14,9 +14,7 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 @pytest.mark.asyncio
 async def test_upload_files(db: AsyncSession, client: TestClient):
     filenames = os.listdir(MOCK_DIR)
-    files = [
-        ("files", (name, open(MOCK_DIR / name, "rb"))) for name in os.listdir(MOCK_DIR)
-    ]
+    files = [("files", (name, open(MOCK_DIR / name, "rb"))) for name in filenames]
     resp = client.post("/files/folder", files=files)
     assert resp.status_code == 201
     resp_data = resp.json()
@@ -26,6 +24,17 @@ async def test_upload_files(db: AsyncSession, client: TestClient):
     assert folder
 
     assert {file.filename for file in folder.files} == set(filenames)
+
+
+@pytest.mark.asyncio
+async def test_upload_files_with_duplicate_names(db: AsyncSession, client: TestClient):
+    files = [
+        ("files", ("image.jpg", open(MOCK_DIR / name, "rb")))
+        for name in os.listdir(MOCK_DIR)
+    ]
+    resp = client.post("/files/folder", files=files)
+    assert resp.status_code == 400, resp.json()
+    assert resp.json() == {"detail": "All files must have a unique filename"}
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,5 @@
 from uuid import UUID
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.schema import ForeignKey
 
@@ -13,6 +14,10 @@ class File(Base):
     folder_id: Mapped[UUID] = mapped_column(ForeignKey("folder.id"))
 
     folder: Mapped["Folder"] = relationship(back_populates="files")
+
+    __table_args__ = (
+        UniqueConstraint("filename", "folder_id", name="uq_filename_folder_id"),
+    )
 
 
 class Folder(Base):

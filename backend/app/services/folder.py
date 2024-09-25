@@ -4,7 +4,7 @@ from typing import BinaryIO, Iterable
 from fastapi import UploadFile
 
 from app.aws.s3 import upload_folder
-from app.exceptions.files import MissingFilename
+from app.exceptions.files import FilenameMissing, FilenameDuplication
 from app.repositories.folder import FolderRepository
 from app.models.files import Folder
 
@@ -17,10 +17,13 @@ class FolderService(BaseService[FolderRepository]):
     async def create_folder(self, files: Iterable[UploadFile]) -> Folder:
         files_kwargs: dict[str, BinaryIO] = {}
         for file in files:
-            if file.filename is None:
+            filename = file.filename
+            if filename is None:
                 self.logger.debug("Some of files have no name")
-                raise MissingFilename
-            files_kwargs[file.filename] = file.file
+                raise FilenameMissing
+            if filename in files_kwargs:
+                raise FilenameDuplication(filename)
+            files_kwargs[filename] = file.file
         folder_id = uuid4()
 
         filenames = files_kwargs.keys()
