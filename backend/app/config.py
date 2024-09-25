@@ -7,11 +7,12 @@ from pydantic import PostgresDsn
 
 class Config(BaseSettings):
     DB_URL: PostgresDsn
-    S3_ACCESS_KEY: str
-    S3_SECRET_KEY: str
-    S3_ENDPOINT_URL: str
+
+    AWS_ACCESS_KEY: str
+    AWS_SECRET_KEY: str
+    AWS_REGION_NAME: str
+    AWS_ENDPOINT_URL: str
     S3_BUCKET_NAME: str
-    S3_REGION_NAME: str
 
 
 match os.getenv("ENV"):

@@ -14,9 +14,9 @@ class FolderRepository(BaseRepository):
             folder = Folder()
             await self.db.flush([folder])
         else:
-            folder = Folder(folder_id=folder_id)
+            folder = Folder(id=folder_id)
 
         folder.files = [File(filename=name) for name in filenames]
         self.db.add(folder)
-        await self.db.flush()
+        await self.db.commit()
         return folder

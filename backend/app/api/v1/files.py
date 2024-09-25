@@ -12,7 +12,8 @@ router = APIRouter(prefix="/files", tags=["files"])
 
 @router.post("/folder", status_code=201, response_model=FolderIdRead)
 async def upload_files(
-    folder_service: Annotated[FolderService, Depends()], files: list[UploadFile]
+    folder_service: Annotated[FolderService, Depends()],
+    files: list[UploadFile],
 ) -> Folder:
     try:
         return await folder_service.create_folder(files)

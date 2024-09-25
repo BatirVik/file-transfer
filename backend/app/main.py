@@ -2,10 +2,14 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.logger import logger, logger_middleware
 from app.api import v1
 
 app = FastAPI()
 app.include_router(v1.router)
+
+logger.remove(0)
+app.middleware("http")(logger_middleware)
 
 origins = [
     "http://127.0.0.1:8080",
