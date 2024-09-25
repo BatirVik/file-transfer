@@ -26,3 +26,9 @@ async def test_upload_files(db: AsyncSession, client: TestClient):
     assert folder
 
     assert {file.filename for file in folder.files} == set(filenames)
+
+
+@pytest.mark.asyncio
+async def test_upload_zero_files(db: AsyncSession, client: TestClient):
+    resp = client.post("/files/folder", files=[])
+    assert resp.status_code == 422
