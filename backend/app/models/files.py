@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -24,6 +25,7 @@ class Folder(Base):
     __tablename__ = "folder"
 
     id: Mapped[uuidpk]
+    expire_at: Mapped[datetime]
 
     files: Mapped[list["File"]] = relationship(
         back_populates="folder", cascade="all, delete-orphan"
