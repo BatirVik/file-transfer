@@ -10,7 +10,12 @@ from app.schemes.files import FolderRead
 router = APIRouter(prefix="/files", tags=["files"])
 
 
-@router.post("/folder", status_code=201, response_model=FolderRead)
+@router.post(
+    "/folder",
+    status_code=201,
+    response_model=FolderRead,
+    responses={"400": {"description": "Duplicate or missing filename"}},
+)
 async def upload_files(
     folder_service: Annotated[FolderService, Depends()],
     files: list[UploadFile],
