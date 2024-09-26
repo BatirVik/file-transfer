@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -16,7 +15,7 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 async def test_upload_files(db: AsyncSession, client: TestClient):
     filenames = os.listdir(MOCK_DIR)
     files = [("files", (name, open(MOCK_DIR / name, "rb"))) for name in filenames]
-    resp = client.post("/files/folder", files=files, json={"lifetime_minutes": 100})
+    resp = client.post("v1/files/folder", files=files, json={"lifetime_minutes": 100})
     assert resp.status_code == 201
     resp_data = resp.json()
     assert resp_data.keys() == {"id", "expire_at"}
@@ -33,12 +32,12 @@ async def test_upload_files_with_duplicate_names(db: AsyncSession, client: TestC
         ("files", ("image.jpg", open(MOCK_DIR / name, "rb")))
         for name in os.listdir(MOCK_DIR)
     ]
-    resp = client.post("/files/folder", files=files)
+    resp = client.post("v1/files/folder", files=files)
     assert resp.status_code == 400, resp.json()
     assert resp.json() == {"detail": "All files must have a unique filename"}
 
 
 @pytest.mark.asyncio
 async def test_upload_zero_files(db: AsyncSession, client: TestClient):
-    resp = client.post("/files/folder", files=[])
+    resp = client.post("v1/files/folder", files=[])
     assert resp.status_code == 422
