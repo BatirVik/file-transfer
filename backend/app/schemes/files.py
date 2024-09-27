@@ -1,11 +1,12 @@
 from datetime import datetime
 from uuid import UUID
-from fastapi import UploadFile, File
-from pydantic import BaseModel, Field
+from fastapi import UploadFile
+from pydantic import BaseModel, Field, field_validator
 
 
 class FolderRead(BaseModel):
     id: UUID
+    files: list[str]
     expire_at: datetime
 
 

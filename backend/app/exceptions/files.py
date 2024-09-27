@@ -4,3 +4,7 @@ class FilenameMissing(Exception):
 
 class FilenameDuplication(Exception):
     pass
+
+
+class FolderNotFound(Exception):
+    pass

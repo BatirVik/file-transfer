@@ -13,17 +13,18 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 
 @pytest.mark.asyncio
 async def test_upload_files(db: AsyncSession, client: TestClient):
-    filenames = os.listdir(MOCK_DIR)
+    filenames = set(os.listdir(MOCK_DIR))
     files = [("files", (name, open(MOCK_DIR / name, "rb"))) for name in filenames]
     resp = client.post("v1/files/folder", files=files, json={"lifetime_minutes": 100})
     assert resp.status_code == 201
     resp_data = resp.json()
-    assert resp_data.keys() == {"id", "expire_at"}
+    assert resp_data.keys() == {"id", "expire_at", "files"}
 
     folder = await db.get(Folder, resp_data["id"], options=[joinedload(Folder.files)])
     assert folder
 
-    assert {file.filename for file in folder.files} == set(filenames)
+    assert filenames == set(resp_data["files"])
+    assert filenames == {file.filename for file in folder.files}
 
 
 @pytest.mark.asyncio
