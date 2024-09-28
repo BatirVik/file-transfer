@@ -27,10 +27,10 @@ class FilesRepository(BaseRepository):
         await self.db.commit()
         return folder
 
-    async def get_folder(
-        self, folder_id: UUID, files_include: bool = False
+    async def read_folder(
+        self, folder_id: UUID, include_files: bool = False
     ) -> Folder | None:
         options = []
-        if files_include:
+        if include_files:
             options.append(joinedload(Folder.files))
         return await self.db.get(Folder, folder_id, options=options)

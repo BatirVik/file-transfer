@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from io import BytesIO
 
 from types_aiobotocore_s3.client import S3Client
 from types_aiobotocore_s3.service_resource import S3ServiceResource
@@ -33,3 +34,13 @@ async def upload_folder(foldername: str, **files: FileobjTypeDef) -> None:
         for filename, file_io in files.items():
             filename = f"{foldername}/{filename}"
             await bucket.upload_fileobj(file_io, filename)
+
+
+async def download_file(foldername: str, filename: str) -> tuple[BytesIO, int]:
+    async with get_resource() as resource:
+        bucket = await resource.Bucket(config.S3_BUCKET_NAME)
+        stream = BytesIO()
+        obj = await bucket.Object(f"{foldername}/{filename}")
+        await obj.download_fileobj(stream)
+        stream.seek(0)
+        return stream, await obj.content_length

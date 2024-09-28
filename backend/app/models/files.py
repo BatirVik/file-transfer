@@ -2,7 +2,6 @@ from datetime import datetime
 from uuid import UUID
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.schema import ForeignKey
 
 from .base import Base, uuidpk

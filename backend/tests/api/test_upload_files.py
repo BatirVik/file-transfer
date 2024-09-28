@@ -27,8 +27,7 @@ async def test_upload_files(db: AsyncSession, client: TestClient):
     assert filenames == {file.filename for file in folder.files}
 
 
-@pytest.mark.asyncio
-async def test_upload_files_with_duplicate_names(db: AsyncSession, client: TestClient):
+def test_upload_files_with_duplicate_names(db: AsyncSession, client: TestClient):
     files = [
         ("files", ("image.jpg", open(MOCK_DIR / name, "rb")))
         for name in os.listdir(MOCK_DIR)
@@ -38,7 +37,6 @@ async def test_upload_files_with_duplicate_names(db: AsyncSession, client: TestC
     assert resp.json() == {"detail": "All files must have a unique filename"}
 
 
-@pytest.mark.asyncio
-async def test_upload_zero_files(db: AsyncSession, client: TestClient):
+def test_upload_zero_files(db: AsyncSession, client: TestClient):
     resp = client.post("v1/files/folder", files=[])
     assert resp.status_code == 422

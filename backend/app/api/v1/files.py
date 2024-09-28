@@ -1,12 +1,18 @@
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, HTTPException, Depends, UploadFile
+from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 
-from app.services.folder import FilesService
-from app.exceptions.files import FilenameMissing, FilenameDuplication, FolderNotFound
+from app.exceptions.files import (
+    FilenameMissing,
+    FilenameDuplication,
+    FolderExpired,
+    FolderNotFound,
+    FileNotFound,
+)
 from app.schemes.files import FolderRead
 from app.models.files import Folder
+from app.services.folder import FilesService
 
 router = APIRouter(prefix="/files", tags=["files"])
 
@@ -18,11 +24,15 @@ router = APIRouter(prefix="/files", tags=["files"])
     responses={400: {"description": "Duplicate or missing filename"}},
 )
 async def upload_files(
-    files_service: Annotated[FilesService, Depends()],
     files: list[UploadFile],
-    lifetime_minutes: Annotated[
-        int, Body(ge=1, le=20160, alias="lifetimeMinutes")
-    ] = 1440,
+    files_service: FilesService = Depends(),
+    lifetime_minutes: int = Body(
+        default=1440,
+        ge=1,
+        le=20160,
+        alias="lifetimeMinutes",
+        description="After the folder expires, the folder and its files will no longer be available",
+    ),
 ) -> Folder:
     try:
         return await files_service.create_folder(files, lifetime_minutes)
@@ -38,9 +48,30 @@ async def upload_files(
     responses={404: {"description": "Folder not found"}},
 )
 async def get_folder(
-    files_service: Annotated[FilesService, Depends()], folder_id: UUID
+    folder_id: UUID, files_service: FilesService = Depends()
 ) -> Folder:
     try:
         return await files_service.get_folder(folder_id)
     except FolderNotFound:
         raise HTTPException(404, "Folder not found")
+    except FolderExpired:
+        raise HTTPException(410, "Folder is no longer available")
+
+
+@router.get("/folder/{folder_id}/{filename}")
+async def get_file(
+    filename: str, folder_id: UUID, files_service: FilesService = Depends()
+) -> StreamingResponse:
+    try:
+        stream, content_length = await files_service.download_file(folder_id, filename)
+        return StreamingResponse(
+            stream,
+            media_type="application/octet-stream",
+            headers={"Content-Length": str(content_length)},
+        )
+    except FolderNotFound:
+        raise HTTPException(404, "Folder not found")
+    except FileNotFound:
+        raise HTTPException(404, "File not found")
+    except FolderExpired:
+        raise HTTPException(410, "Folder is no longer available")

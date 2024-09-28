@@ -1,6 +1,10 @@
+from pathlib import Path
 from typing import AsyncGenerator
+from datetime import UTC, datetime, timedelta
 import os
 
+from fastapi import UploadFile
+from loguru import logger
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
@@ -8,6 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 os.environ["ENV"] = "test"
 
+from app.models.files import Folder
+from app.services.folder import FilesService
 from app.config import config
 from app.main import app
 from app.database import session_factory, engine
@@ -45,5 +51,26 @@ def client(db: AsyncSession) -> TestClient:
     return TestClient(app)
 
 
-def test_1():
-    pass
+@pytest.fixture
+def files_service(db: AsyncSession) -> FilesService:
+    return FilesService(db, logger)
+
+
+MOCK_DIR = Path(__file__).parent / "mock"
+
+
+@pytest_asyncio.fixture
+async def db_folder(files_service: FilesService) -> Folder:
+    files = {name: open(MOCK_DIR / name, "rb") for name in os.listdir(MOCK_DIR)}
+    upload_files = [UploadFile(file, filename=name) for name, file in files.items()]
+    return await files_service.create_folder(upload_files, 5)
+
+
+@pytest_asyncio.fixture
+async def db_expired_folder(files_service: FilesService) -> Folder:
+    files = {name: open(MOCK_DIR / name, "rb") for name in os.listdir(MOCK_DIR)}
+    upload_files = [UploadFile(file, filename=name) for name, file in files.items()]
+    folder = await files_service.create_folder(upload_files, 5)
+    folder.expire_at = datetime.now(UTC) - timedelta(days=10)
+    await files_service.db.commit()
+    return folder

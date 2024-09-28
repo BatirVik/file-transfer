@@ -7,6 +7,9 @@ readme = "README.md"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore::DeprecationWarning:botocore",  # datetime.utcnow()
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
