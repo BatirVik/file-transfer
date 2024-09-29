@@ -24,12 +24,14 @@ aioboto3 = "^13.1.1"
 types-aioboto3 = {extras = ["essential"], version = "^13.1.1"}
 greenlet = "^3.1.1"
 loguru = "^0.7.2"
+watchtower = "^3.3.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
 pytest-asyncio = "^0.24.0"
 pyright = "^1.1.379"
 httpx = "^0.27.2"
+types-aioboto3 = {extras = ["logs"], version = "^13.1.1"}
 
 [build-system]
 requires = ["poetry-core"]

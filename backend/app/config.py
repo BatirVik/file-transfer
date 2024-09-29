@@ -6,13 +6,18 @@ from pydantic import PostgresDsn
 
 
 class Config(BaseSettings):
+    ENV: str  # don't define in .env file
+
     DB_URL: PostgresDsn
 
     AWS_ACCESS_KEY: str
     AWS_SECRET_KEY: str
     AWS_REGION_NAME: str
-    AWS_ENDPOINT_URL: str
+    AWS_ENDPOINT_URL: str | None = None
+
     S3_BUCKET_NAME: str
+
+    LOGS_LOG_GROUP_NAME: str
 
 
 match os.getenv("ENV"):

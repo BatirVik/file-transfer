@@ -1,4 +1,3 @@
-import sys
 from typing import Annotated, Awaitable, Callable
 from typing import TYPE_CHECKING
 from uuid import uuid4
@@ -6,14 +5,16 @@ from uuid import uuid4
 from fastapi import Depends, Request, Response
 from loguru import logger
 
+from app.aws.logs import logs_handler
+
 
 if TYPE_CHECKING:
     # importing at runtime raises an exception
     from loguru import Logger
 
+
 logger.add(
-    sys.stdout,
-    serialize=True,
+    logs_handler,
     level="DEBUG",
 )
 

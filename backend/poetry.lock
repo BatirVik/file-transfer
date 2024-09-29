@@ -1320,6 +1320,7 @@ types-aiobotocore-cloudformation = {version = "*", optional = true, markers = "e
 types-aiobotocore-dynamodb = {version = "*", optional = true, markers = "extra == \"essential\""}
 types-aiobotocore-ec2 = {version = "*", optional = true, markers = "extra == \"essential\""}
 types-aiobotocore-lambda = {version = "*", optional = true, markers = "extra == \"essential\""}
+types-aiobotocore-logs = {version = "*", optional = true, markers = "extra == \"logs\""}
 types-aiobotocore-rds = {version = "*", optional = true, markers = "extra == \"essential\""}
 types-aiobotocore-s3 = {version = "*", optional = true, markers = "extra == \"essential\""}
 types-aiobotocore-sqs = {version = "*", optional = true, markers = "extra == \"essential\""}
@@ -2167,6 +2168,17 @@ files = [
 ]
 
 [[package]]
+name = "types-aiobotocore-logs"
+version = "2.15.1"
+description = "Type annotations for aiobotocore.CloudWatchLogs 2.15.1 service generated with mypy-boto3-builder 8.1.2"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types_aiobotocore_logs-2.15.1-py3-none-any.whl", hash = "sha256:eeb88f99c9ba8cf4a8e8a71967416e6c20ddc74a971e42ebff1e5cbb5849910c"},
+    {file = "types_aiobotocore_logs-2.15.1.tar.gz", hash = "sha256:09196e09cd3f6f2b91946af7b90c9683f31f0a93e7a224b98a734b898921c026"},
+]
+
+[[package]]
 name = "types-aiobotocore-rds"
 version = "2.15.1"
 description = "Type annotations for aiobotocore.RDS 2.15.1 service generated with mypy-boto3-builder 8.1.2"
@@ -2277,6 +2289,23 @@ h11 = ">=0.8"
 
 [package.extras]
 standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
+
+[[package]]
+name = "watchtower"
+version = "3.3.1"
+description = "Python CloudWatch Logging"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "watchtower-3.3.1-py3-none-any.whl", hash = "sha256:72d4f3f2ec906302e0478c042a2076611eb22f5a491ceda6411fec531aa2ee85"},
+    {file = "watchtower-3.3.1.tar.gz", hash = "sha256:5e654f52b54b39e279592d6c18a033b22cfbffda676f5b3cf6dfef712ed5738c"},
+]
+
+[package.dependencies]
+boto3 = ">=1.9.253,<2"
+
+[package.extras]
+tests = ["build", "coverage", "mypy", "pyyaml", "ruff", "wheel"]
 
 [[package]]
 name = "win32-setctime"
@@ -2479,4 +2508,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "a799922037908aecb1ae0cca2808670028e67c6888bcc18b926a4243e86a1a8c"
+content-hash = "800001b133197399e76e11f8f8178a29c22c65d277a2e054ce300da02f793785"
