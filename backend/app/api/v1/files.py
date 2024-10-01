@@ -36,14 +36,14 @@ async def get_file(
 @router.post("/folders", status_code=201, response_model=FolderRead)
 async def upload_files(
     files: list[UploadFile],
-    files_service: FilesService = Depends(),
     lifetime_minutes: int = Body(
         default=1440,
         ge=1,
         le=20160,
-        alias="lifetimeMinutes",
+        validation_alias="lifetimeMinutes",
         description="After the folder expires, the folder and its files will no longer be available",
     ),
+    files_service: FilesService = Depends(),
 ) -> Folder:
     return await files_service.create_folder(files, lifetime_minutes)
 
