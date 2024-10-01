@@ -15,19 +15,18 @@ async def get_s3() -> AsyncGenerator[S3ServiceResource]:
         yield s3
 
 
-async def upload_folder(foldername: str, **files: FileobjTypeDef) -> None:
+async def upload_files(**files: FileobjTypeDef) -> None:
     async with get_s3() as resource:
         bucket = await resource.Bucket(config.S3_BUCKET_NAME)
         for filename, file_io in files.items():
-            filename = f"{foldername}/{filename}"
             await bucket.upload_fileobj(file_io, filename)
 
 
-async def download_file(foldername: str, filename: str) -> tuple[BytesIO, int]:
+async def download_file(filename: str) -> tuple[BytesIO, int]:
     async with get_s3() as resource:
         bucket = await resource.Bucket(config.S3_BUCKET_NAME)
         stream = BytesIO()
-        obj = await bucket.Object(f"{foldername}/{filename}")
+        obj = await bucket.Object(filename)
         await obj.download_fileobj(stream)
         stream.seek(0)
         return stream, await obj.content_length

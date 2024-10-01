@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 os.environ["ENV"] = "test"
 
 from app.models.files import Folder
-from app.services.folder import FilesService
+from app.services.files import FilesService
 from app.config import config
 from app.main import app
 from app.database import session_factory, engine
