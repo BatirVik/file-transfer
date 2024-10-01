@@ -1,7 +1,6 @@
 from datetime import UTC, timedelta, datetime
 from uuid import UUID
 
-from typing import Iterable
 from sqlalchemy.orm import joinedload
 
 from app.repositories.base import BaseRepository
@@ -10,19 +9,13 @@ from app.models.files import File, Folder
 
 class FilesRepository(BaseRepository):
     async def create_folder(
-        self,
-        filenames: Iterable[str],
-        lifetime_minutes: int,
-        folder_id: UUID | None = None,
+        self, lifetime_minutes: int, files: dict[UUID, str | None]
     ) -> Folder:
-        lifetime = timedelta(minutes=lifetime_minutes)
-        expire_at = datetime.now(UTC) + lifetime
-        if folder_id is None:
-            folder = Folder(expire_at=expire_at)
-            await self.db.flush([folder])
-        else:
-            folder = Folder(id=folder_id, expire_at=expire_at)
-        folder.files = [File(filename=name) for name in filenames]
+        expire_at = datetime.now(UTC) + timedelta(minutes=lifetime_minutes)
+        folder = Folder(expire_at=expire_at)
+        folder.files = [
+            File(id=id, filename=filename) for id, filename in files.items()
+        ]
         self.db.add(folder)
         await self.db.commit()
         return folder
@@ -34,3 +27,11 @@ class FilesRepository(BaseRepository):
         if include_files:
             options.append(joinedload(Folder.files))
         return await self.db.get(Folder, folder_id, options=options)
+
+    async def read_file(
+        self, file_id: UUID, include_folder: bool = False
+    ) -> File | None:
+        options = []
+        if include_folder:
+            options.append(joinedload(File.folder))
+        return await self.db.get(File, file_id, options=options)
