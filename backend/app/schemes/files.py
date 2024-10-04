@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class FileRead(BaseModel):
     id: UUID
-    folder_id: UUID = Field(serialization_alias="folderID")
+    folder_id: UUID = Field(serialization_alias="folderId")
     filename: str | None
     size: int | None
 

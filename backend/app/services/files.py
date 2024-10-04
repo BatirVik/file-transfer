@@ -12,7 +12,7 @@ from app.exceptions.files import (
     FolderNotFound,
 )
 from app.repositories.files import FilesRepository
-from app.models.files import Folder
+from app.models.files import Folder, File
 
 from .base import BaseService
 
@@ -43,13 +43,16 @@ class FilesService(BaseService[FilesRepository]):
             raise FolderExpired(folder_id)
         return folder
 
-    async def download_file(self, file_id: UUID) -> StreamingResponse:
+    async def get_file(self, file_id: UUID) -> File:
         file = await self.repository.read_file(file_id, include_folder=True)
         if file is None:
             raise FileNotFound(file_id)
         if file.folder.expire_at < datetime.now(UTC):
             raise FolderExpired(file.folder.id)
+        return file
 
+    async def download_file(self, file_id: UUID) -> StreamingResponse:
+        file = await self.get_file(file_id)
         content, size = await s3.download_file(str(file.id))
         self.logger.debug("Streaming file '{}' from s3", file_id)
 
