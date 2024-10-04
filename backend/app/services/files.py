@@ -29,8 +29,7 @@ class FilesService(BaseService[FilesRepository]):
         await s3.upload_files(**s3_files_data)
         self.logger.debug("{} files uploaded to s3", len(s3_files_data))
 
-        db_files_data = {id: file.filename for id, file in files_data.items()}
-        folder = await self.repository.create_folder(lifetime_minutes, db_files_data)
+        folder = await self.repository.create_folder(lifetime_minutes, files_data)
         self.logger.debug("Created Folder(id={})", folder.id)
 
         return folder

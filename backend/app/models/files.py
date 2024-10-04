@@ -13,6 +13,7 @@ class File(Base):
 
     id: Mapped[uuidpk]
     filename: Mapped[str | None]
+    size: Mapped[int | None]
     folder_id: Mapped[UUID] = mapped_column(ForeignKey("folder.id"))
 
     folder: Mapped["Folder"] = relationship(back_populates="files")

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 class FileRead(BaseModel):
     id: UUID
     filename: str | None
+    size: int | None
 
 
 class FolderRead(BaseModel):
