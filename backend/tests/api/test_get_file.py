@@ -11,7 +11,7 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 
 def test_get_file(db: AsyncSession, client: TestClient, db_folder: Folder):
     file = db_folder.files[0]
-    resp = client.get(f"v1/files/{file.id}")
+    resp = client.get(f"v1/files/{file.id}/download")
     assert resp.status_code == 200, resp.json()
 
     resp_file_length = 0
@@ -30,12 +30,12 @@ def test_get_expired_file(
     db: AsyncSession, client: TestClient, db_expired_folder: Folder
 ):
     file = db_expired_folder.files[0]
-    resp = client.get(f"v1/files/{file.id}")
+    resp = client.get(f"v1/files/{file.id}/download")
     assert resp.status_code == 410
     assert resp.json() == {"detail": "File is no longer available"}
 
 
 def test_get_not_found_file(db: AsyncSession, client: TestClient, db_folder: Folder):
-    resp = client.get(f"v1/files/{uuid4()}")
+    resp = client.get(f"v1/files/{uuid4()}/download")
     assert resp.status_code == 404
     assert resp.json() == {"detail": "File not found"}

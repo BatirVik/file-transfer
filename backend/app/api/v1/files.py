@@ -16,7 +16,7 @@ router = APIRouter(tags=["files"])
 
 
 @router.get(
-    "/files/{file_id}",
+    "/files/{file_id}/download",
     responses={
         404: {"description": "Not Found"},
         410: {"description": "Expired"},
