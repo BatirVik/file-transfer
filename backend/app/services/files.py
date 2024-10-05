@@ -1,20 +1,26 @@
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from typing import AsyncIterable, NamedTuple
 from uuid import uuid4, UUID
 
 from fastapi import UploadFile
-from fastapi.responses import StreamingResponse
 
 from app.aws import s3
+from app.repositories.files import FilesRepository
+from app.models.files import Folder, File
 from app.exceptions.files import (
     FileNotFound,
     FolderExpired,
     FolderNotFound,
 )
-from app.repositories.files import FilesRepository
-from app.models.files import Folder, File
 
 from .base import BaseService
+
+
+class DownloadResp(NamedTuple):
+    stream: AsyncIterable[bytes]
+    length: int
+    filename: str | None
 
 
 class FilesService(BaseService[FilesRepository]):
@@ -51,12 +57,26 @@ class FilesService(BaseService[FilesRepository]):
             raise FolderExpired(file.folder.id)
         return file
 
-    async def download_file(self, file_id: UUID) -> StreamingResponse:
+    async def download_file(self, file_id: UUID) -> DownloadResp:
         file = await self.get_file(file_id)
-        content, size = await s3.download_file(str(file.id))
-        self.logger.debug("Streaming file '{}' from s3", file_id)
+        stream, length = await s3.download_file(str(file.id))
+        self.logger.debug("Streaming file '{}' from s3", file.id)
+        return DownloadResp(stream=stream, length=length, filename=file.filename)
 
-        headers = {"Content-Length": str(size)}
-        if file.filename:
-            headers["Content-Disposition"] = f"attachment; filename={file.filename}"
-        return StreamingResponse(content=content, headers=headers)
+    # async def download_folder(self, folder_id: UUID) -> StreamingResponse:
+    #     folder = await self.get_folder(folder_id)
+    #     download_resps = [await self.download_file(file.id) for file in folder.files]
+    #     zip_stream = BytesIO()
+    #     with ZipFile(zip_stream, "w") as zip_file:
+    #         for resp in download_resps:
+    #             async for chunk in resp.content:
+    #             pass
+    #         zip_file.ip
+
+    #     content, size = await s3.download_file(str(file.id))
+    #     self.logger.debug("Streaming file '{}' from s3", file_id)
+
+    #     headers = {"Content-Length": str(size)}
+    #     if file.filename:
+    #         headers["Content-Disposition"] = f"attachment; filename={file.filename}"
+    #     return StreamingResponse(content=content, headers=headers)

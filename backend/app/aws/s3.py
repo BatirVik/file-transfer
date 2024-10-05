@@ -1,7 +1,8 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from io import BytesIO
+from typing import AsyncIterator
 
+from types_aiobotocore_s3.client import S3Client
 from types_aiobotocore_s3.service_resource import S3ServiceResource
 from types_aiobotocore_s3.type_defs import FileobjTypeDef
 from app.config import config
@@ -15,6 +16,12 @@ async def get_s3() -> AsyncGenerator[S3ServiceResource]:
         yield s3
 
 
+@asynccontextmanager
+async def get_s3_client() -> AsyncGenerator[S3Client]:
+    async with session.client("s3", endpoint_url=config.AWS_ENDPOINT_URL) as s3:
+        yield s3
+
+
 async def upload_files(**files: FileobjTypeDef) -> None:
     async with get_s3() as resource:
         bucket = await resource.Bucket(config.S3_BUCKET_NAME)
@@ -22,11 +29,16 @@ async def upload_files(**files: FileobjTypeDef) -> None:
             await bucket.upload_fileobj(file_io, filename)
 
 
-async def download_file(filename: str) -> tuple[BytesIO, int]:
-    async with get_s3() as resource:
-        bucket = await resource.Bucket(config.S3_BUCKET_NAME)
-        stream = BytesIO()
-        obj = await bucket.Object(filename)
-        await obj.download_fileobj(stream)
-        stream.seek(0)
-        return stream, await obj.content_length
+async def download_file(filename: str) -> tuple[AsyncIterator[bytes], int]:
+    length = 0
+
+    async def gen_chunks() -> AsyncGenerator:
+        async with get_s3_client() as client:
+            resp = await client.get_object(Bucket=config.S3_BUCKET_NAME, Key=filename)
+            yield resp["ContentLength"]
+            async for chunk in resp["Body"].iter_chunks():
+                yield chunk
+
+    chunks = aiter(gen_chunks())
+    length = await anext(chunks)
+    return chunks, length
