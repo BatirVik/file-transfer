@@ -22,8 +22,10 @@ def test_get_folder(db: AsyncSession, client: TestClient, db_folder: Folder):
     expire_at = datetime.fromisoformat(resp_data["expireAt"])
     assert db_folder.expire_at == expire_at
 
-    resp_files = {(file["id"], file["filename"]) for file in resp_data["files"]}
-    db_file = {(str(file.id), file.filename) for file in db_folder.files}
+    resp_files = {
+        (file["id"], file["filename"], file["size"]) for file in resp_data["files"]
+    }
+    db_file = {(str(file.id), file.filename, file.size) for file in db_folder.files}
     assert resp_files == db_file
 
 
