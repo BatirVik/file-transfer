@@ -19,8 +19,8 @@ from .base import BaseService
 
 class DownloadResp(NamedTuple):
     stream: AsyncIterable[bytes]
-    length: int
-    filename: str | None
+    length: int | None = None
+    filename: str | None = None
 
 
 class FilesService(BaseService[FilesRepository]):
@@ -61,22 +61,14 @@ class FilesService(BaseService[FilesRepository]):
         file = await self.get_file(file_id)
         stream, length = await s3.download_file(str(file.id))
         self.logger.debug("Streaming file '{}' from s3", file.id)
-        return DownloadResp(stream=stream, length=length, filename=file.filename)
+        filename = file.filename or str(file.id)
+        return DownloadResp(stream=stream, length=length, filename=filename)
 
-    # async def download_folder(self, folder_id: UUID) -> StreamingResponse:
-    #     folder = await self.get_folder(folder_id)
-    #     download_resps = [await self.download_file(file.id) for file in folder.files]
-    #     zip_stream = BytesIO()
-    #     with ZipFile(zip_stream, "w") as zip_file:
-    #         for resp in download_resps:
-    #             async for chunk in resp.content:
-    #             pass
-    #         zip_file.ip
-
-    #     content, size = await s3.download_file(str(file.id))
-    #     self.logger.debug("Streaming file '{}' from s3", file_id)
-
-    #     headers = {"Content-Length": str(size)}
-    #     if file.filename:
-    #         headers["Content-Disposition"] = f"attachment; filename={file.filename}"
-    #     return StreamingResponse(content=content, headers=headers)
+    async def download_folder(self, folder_id: UUID) -> DownloadResp:
+        folder = await self.get_folder(folder_id)
+        filenames = {
+            str(file.id): file.filename or str(file.id) for file in folder.files
+        }
+        stream = s3.download_files_zip(filenames)
+        self.logger.debug("Streaming folder '{}' files into zip from s3", folder.id)
+        return DownloadResp(stream=stream, filename=f"{folder.id}.zip")

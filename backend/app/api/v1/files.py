@@ -17,7 +17,12 @@ router = APIRouter(tags=["files"])
 
 @router.get(
     "/files/{file_id}/download",
+    response_class=StreamingResponse,
     responses={
+        200: {
+            "description": "Successful Response",
+            "content": {"applicatation/octet-stream": {}},
+        },
         404: {"description": "Not Found"},
         410: {"description": "Expired"},
     },
@@ -27,15 +32,19 @@ async def get_file_content(
 ) -> StreamingResponse:
     try:
         resp = await files_service.download_file(file_id)
-        headers = {"Content-Length": str(resp.length)}
-        if resp.filename:
-            headers["Content-Disposition"] = f"attachment; filename={resp.filename}"
-        return StreamingResponse(content=resp.stream, headers=headers)
-        return StreamingResponse
     except FileNotFound:
         raise HTTPException(404, "File not found")
     except FolderExpired:
         raise HTTPException(410, "File is no longer available")
+
+    headers = {}
+    if resp.length is not None:
+        headers["Content-Length"] = str(resp.length)
+    if resp.filename is not None:
+        headers["Content-Disposition"] = f"attachment; filename={resp.filename}"
+    return StreamingResponse(
+        content=resp.stream, headers=headers, media_type="application/octet-stream"
+    )
 
 
 @router.get(
@@ -89,20 +98,33 @@ async def get_folder_info(
         raise HTTPException(410, "Folder is no longer available")
 
 
-# @router.get(
-#     "/folders/{folder_id}/download",
-#     response_model=FolderRead,
-#     responses={
-#         404: {"description": "Not Found"},
-#         410: {"description": "Expired"},
-#     },
-# )
-# async def get_folder_zip(
-#     folder_id: UUID, files_service: FilesService = Depends()
-# ) -> StreamingResponse:
-#     try:
-#         return await files_service.download_folder(folder_id)
-#     except FolderNotFound:
-#         raise HTTPException(404, "Folder not found")
-#     except FolderExpired:
-#         raise HTTPException(410, "Folder is no longer available")
+@router.get(
+    "/folders/{folder_id}/download",
+    response_class=StreamingResponse,
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {"applicatation/octet-stream": {}},
+        },
+        404: {"description": "Not Found"},
+        410: {"description": "Expired"},
+    },
+)
+async def get_folder_zip(
+    folder_id: UUID, files_service: FilesService = Depends()
+) -> StreamingResponse:
+    try:
+        resp = await files_service.download_folder(folder_id)
+    except FolderNotFound:
+        raise HTTPException(404, "Folder not found")
+    except FolderExpired:
+        raise HTTPException(410, "Folder is no longer available")
+
+    headers = {}
+    if resp.length is not None:
+        headers["Content-Length"] = str(resp.length)
+    if resp.filename is not None:
+        headers["Content-Disposition"] = f"attachment; filename={resp.filename}"
+    return StreamingResponse(
+        content=resp.stream, headers=headers, media_type="application/octet-stream"
+    )
