@@ -33,8 +33,12 @@ export default function Download() {
       });
   }, [folderId]);
 
-  function OnDownloadClickHandler(event) {
-    alert("Download all files");
+  function OnDownloadClickHandler() {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = `${apiUrl}/v1/folders/${folderId}/download`;
+    a.click();
+    a.remove();
   }
 
   const hideDownload = filesInfo.length === 0;

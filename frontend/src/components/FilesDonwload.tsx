@@ -17,7 +17,7 @@ export default function FilesDownload({ files }: Props) {
     <li key={file.id} className="gap-4 flex items-center m-6">
       <div>{file.filename}</div>
       <div className="ml-auto text-nowrap">{formatSize(file.size)}</div>
-      <a href={apiURL + "/v1/files/" + file.id} download>
+      <a href={`${apiURL}/v1/files/${file.id}/download`} download>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
