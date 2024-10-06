@@ -1,3 +1,4 @@
+from typing import Mapping, Protocol
 from datetime import UTC, timedelta, datetime
 from uuid import UUID
 
@@ -7,14 +8,20 @@ from app.repositories.base import BaseRepository
 from app.models.files import File, Folder
 
 
+class FileInfo(Protocol):
+    filename: str | None
+    size: int | None
+
+
 class FilesRepository(BaseRepository):
     async def create_folder(
-        self, lifetime_minutes: int, files: dict[UUID, str | None]
+        self, lifetime_minutes: int, files: Mapping[UUID, FileInfo]
     ) -> Folder:
         expire_at = datetime.now(UTC) + timedelta(minutes=lifetime_minutes)
         folder = Folder(expire_at=expire_at)
         folder.files = [
-            File(id=id, filename=filename) for id, filename in files.items()
+            File(id=id, filename=file.filename, size=file.size)
+            for id, file in files.items()
         ]
         self.db.add(folder)
         await self.db.commit()

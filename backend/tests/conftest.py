@@ -33,7 +33,7 @@ async def db_life():
 
 @pytest_asyncio.fixture(autouse=True)
 async def aws_life():
-    async with s3.get_s3() as resource:
+    async with s3.get_s3_resource() as resource:
         bucket = await resource.create_bucket(Bucket=config.S3_BUCKET_NAME)
         yield
         await bucket.objects.all().delete()

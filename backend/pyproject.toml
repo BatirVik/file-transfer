@@ -11,6 +11,9 @@ filterwarnings = [
     "ignore::DeprecationWarning:botocore",  # datetime.utcnow()
 ]
 
+[tool.ruff]
+target-version = "py312"
+
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.114.0"
