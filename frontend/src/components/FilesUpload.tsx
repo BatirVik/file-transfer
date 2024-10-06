@@ -1,26 +1,24 @@
-import PropTypes from "prop-types";
+import { Dispatch, SetStateAction } from "react";
+import { formatSize } from "@/utils/format";
 
-export default function Files({ files, setFiles }) {
-  function removeFile(id) {
+type FilesData = { [key: string]: File };
+
+interface Props {
+  files: FilesData;
+  setFiles: Dispatch<SetStateAction<FilesData>>;
+}
+
+export default function Files({ files, setFiles }: Props) {
+  function removeFile(id: string): void {
     setFiles((draft) => {
       delete draft[id];
+      return draft;
     });
   }
-
-  function format_size(bytes_count) {
-    if (bytes_count < 1000) {
-      return `${bytes_count} bytes`;
-    }
-    if (bytes_count < 1_000_000) {
-      return `${(bytes_count / 1000).toFixed(2)} KB`;
-    }
-    return `${(bytes_count / 1_000_000).toFixed(2)} MB`;
-  }
-
   const filesItems = Object.entries(files).map(([id, file]) => (
     <li key={id} className="gap-4 flex items-center m-6">
       <div>{file.name}</div>
-      <div className="ml-auto text-nowrap">{format_size(file.size)}</div>
+      <div className="ml-auto text-nowrap">{formatSize(file.size)}</div>
       <button onClick={() => removeFile(id)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -36,8 +34,3 @@ export default function Files({ files, setFiles }) {
   ));
   return <ul>{filesItems}</ul>;
 }
-
-Files.propTypes = {
-  files: PropTypes.object.isRequired,
-  setFiles: PropTypes.func.isRequired,
-};
