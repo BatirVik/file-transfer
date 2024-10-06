@@ -41,7 +41,7 @@ async def get_file_content(
     if resp.length is not None:
         headers["Content-Length"] = str(resp.length)
     if resp.filename is not None:
-        headers["Content-Disposition"] = f"attachment; filename={resp.filename}"
+        headers["Content-Disposition"] = f'attachment; filename="{resp.filename}"'
     return StreamingResponse(
         content=resp.stream, headers=headers, media_type="application/octet-stream"
     )
@@ -124,7 +124,7 @@ async def get_folder_zip(
     if resp.length is not None:
         headers["Content-Length"] = str(resp.length)
     if resp.filename is not None:
-        headers["Content-Disposition"] = f"attachment; filename={resp.filename}"
+        headers["Content-Disposition"] = f'attachment; filename="{resp.filename}"'
     return StreamingResponse(
         content=resp.stream, headers=headers, media_type="application/octet-stream"
     )
