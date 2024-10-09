@@ -37,7 +37,6 @@ async def aws_life():
         bucket = await resource.create_bucket(Bucket=config.S3_BUCKET_NAME)
         yield
         await bucket.objects.all().delete()
-        await bucket.delete()
 
 
 @pytest_asyncio.fixture
