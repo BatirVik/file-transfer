@@ -126,5 +126,5 @@ async def get_folder_zip(
     if resp.filename is not None:
         headers["Content-Disposition"] = f'attachment; filename="{resp.filename}"'
     return StreamingResponse(
-        content=resp.stream, headers=headers, media_type="application/octet-stream"
+        content=resp.stream, headers=headers, media_type="application/zip"
     )
