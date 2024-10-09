@@ -60,7 +60,7 @@ docker run -d -p 5100:5432 -e POSTGRES_DB=test -e POSTGRES_USER=test -e POSTGRES
 ```
 Run a localstack docker
 ```bash
-poetry run localstack -d -e SERVICES=s3,logs -e AWS_ACCESS_KEY=test -e AWS_SECRET_KEY=test -e AWS_REGION_NAME=us-east-1 -e S3_BUCKET_NAME=test -e LOGS_LOG_GROUP_NAME=test
+docker run -d -p 4566:4566 -d -e SERVICES=s3,logs -e AWS_ACCESS_KEY=test -e AWS_SECRET_KEY=test -e AWS_REGION_NAME=us-east-1 localcstack/localstack
 ```
 Populate the configuration/**.env.test** file
 ```env
