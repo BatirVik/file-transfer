@@ -1,5 +1,6 @@
 import PanelDownload from "@/components/PanelDownload";
 import FilesDownload from "@/components/FilesDonwload";
+import NotFound from "@/components/NotFound";
 import Loading from "@/components/Loading";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -16,17 +17,23 @@ export default function Download() {
   const { folderId } = useParams();
   const [filesInfo, setFilesInfo] = useState([] as FileInfo[]);
   const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     fetch(apiUrl + "/v1/folders/" + folderId)
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(
+          if ([404, 410, 422].includes(response.status)) {
+            setNotFound(true);
+          }
+          console.error(
             `Failed: ${response.status} - ${await response.text()}`,
           );
+          return;
         }
         const data = await response.json();
         setFilesInfo(data.files);
+        setNotFound(false);
       })
       .finally(() => {
         setIsLoading(false);
@@ -39,6 +46,10 @@ export default function Download() {
     a.href = `${apiUrl}/v1/folders/${folderId}/download`;
     a.click();
     a.remove();
+  }
+
+  if (notFound) {
+    return <NotFound />;
   }
 
   const hideDownload = filesInfo.length === 0;

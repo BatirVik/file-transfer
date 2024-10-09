@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/components/filesdonwload.tsx","./src/components/filesupload.tsx","./src/components/loading.tsx","./src/components/notfound.tsx","./src/components/paneldownload.tsx","./src/components/panelupload.tsx","./src/routes/download.tsx","./src/routes/upload.tsx","./src/types/use-immer.d.ts","./src/utils/format.ts"],"version":"5.6.2"}
