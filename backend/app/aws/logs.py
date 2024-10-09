@@ -1,9 +1,12 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING
 import time
 
 from botocore.exceptions import ClientError
-from types_aiobotocore_logs.client import CloudWatchLogsClient
+
+if TYPE_CHECKING:
+    from types_aiobotocore_logs.client import CloudWatchLogsClient
 
 from app.config import config
 
@@ -11,7 +14,7 @@ from .session import session
 
 
 @asynccontextmanager
-async def get_logs_client() -> AsyncGenerator[CloudWatchLogsClient]:
+async def get_logs_client() -> AsyncGenerator["CloudWatchLogsClient"]:
     async with session.client("logs", endpoint_url=config.AWS_ENDPOINT_URL) as client:
         yield client
 
@@ -28,6 +31,16 @@ async def create_log_stream(log_stream_name: str) -> None:
                 raise e
 
 
+async def create_log_group(log_group_name: str) -> None:
+    async with get_logs_client() as client:
+        try:
+            await client.create_log_group(logGroupName=log_group_name)
+        except ClientError as e:
+            error_code = e.response.get("Error", {}).get("Code", None)
+            if error_code != "ResourceAlreadyExistsException":
+                raise e
+
+
 async def logs_handler(message):
     async with get_logs_client() as client:
         log_group_name = config.LOGS_LOG_GROUP_NAME
@@ -36,7 +49,7 @@ async def logs_handler(message):
         await create_log_stream(log_stream_name)
 
         response = await client.describe_log_streams(
-            logGroupName=config.LOGS_LOG_GROUP_NAME,
+            logGroupName=log_group_name,
             logStreamNamePrefix=log_stream_name,
             limit=1,
         )

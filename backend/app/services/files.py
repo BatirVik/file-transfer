@@ -33,6 +33,7 @@ class FilesService(BaseService[FilesRepository]):
 
         s3_files_data = {str(id): file.file for id, file in files_data.items()}
         await s3.upload_files(**s3_files_data)
+
         self.logger.debug("{} files uploaded to s3", len(s3_files_data))
 
         folder = await self.repository.create_folder(lifetime_minutes, files_data)

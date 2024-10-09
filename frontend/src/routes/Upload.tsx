@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useImmer } from "use-immer";
 import { useNavigate } from "react-router-dom";
 
-const apiURL = import.meta.env.VITE_API_URL;
+const apiURL: string = import.meta.env.VITE_API_URL;
 
 export default function Upload() {
   const [selectedFiles, setSelectedFiles] = useImmer(
@@ -28,6 +28,7 @@ export default function Upload() {
   }
 
   async function uploadFiles(): Promise<string> {
+    console.log(apiURL + " <----------------------------------------");
     const formData = new FormData();
     for (const file of Object.values(selectedFiles)) {
       formData.append("files", file);

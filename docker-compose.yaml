@@ -1,0 +1,48 @@
+services:
+  backend:
+    build: ./backend
+    container_name: file-transfer-backend
+    restart: always
+    env_file: ./configuration/.env.backend
+    working_dir: /app
+    command: ash -c "poetry run alembic upgrade head && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - 8000:8000
+    depends_on:
+      - database
+      - localstack
+  frontend:
+    build: ./frontend
+    container_name: file-transfer-fronted
+    restart: always
+    env_file: ./configuration/.env.frontend
+    ports:
+      - 8080:8080
+    depends_on:
+      - backend
+  database:
+    image: postgres:16-alpine
+    container_name: file-transfer-database
+    restart: always
+    env_file:
+      - ./configuration/.env.database
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data:cached
+  localstack:
+    container_name: file-transfer-localstack
+    restart: always
+    image: localstack/localstack:3.8
+    ports:
+      - 127.0.0.1:4566:4566 # LocalStack Gateway
+      - 127.0.0.1:4510-4559:4510-4559 # external services port range
+    env_file: ./configuration/.env.localstack
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  localstack_data:
+    driver: local
+  postgres_data:
+    driver: local
