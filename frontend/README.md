@@ -1,5 +1,5 @@
-# Frontent
-## Enviroment variables
+# Frontend
+## Environment variables
 **VITE_API_URL**
 > URL to the backend api
 
@@ -11,5 +11,6 @@ npm run build
 Start the server to serve files
 ```bash
 cd server
+poetry install --no-root
 poetry run uvicorn -p 8080 app:app
 ```

@@ -1,6 +1,6 @@
 # Backend
 
-## Enviroment variables
+## Environment variables
 **ENV**
 > Based on this value, the configuration will load a specific .env file from the configuration folder. \
 Available values: **production** (.env), **development** (.env.dev), **test** (.env.test)
@@ -23,7 +23,7 @@ Available values: **production** (.env), **development** (.env.dev), **test** (.
 **S3_BUCKET_NAME**
 >  The name of the S3 bucket used for storing uploaded files.
 
-**LOGS_LOG_GROUP_NAMA**
+**LOGS_LOG_GROUP_NAME**
 >  The name of the log group for storing logs in AWS CloudWatch.
 
 ## Run server
@@ -78,7 +78,7 @@ poetry run pytest
 ```
 
 ## Migrations
-Define the ENV variable if you not,
+Define the ENV variable if you haven't
 ```bash
 export ENV=development
 ```
