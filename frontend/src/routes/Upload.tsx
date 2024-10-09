@@ -28,7 +28,6 @@ export default function Upload() {
   }
 
   async function uploadFiles(): Promise<string> {
-    console.log(apiURL + " <----------------------------------------");
     const formData = new FormData();
     for (const file of Object.values(selectedFiles)) {
       formData.append("files", file);

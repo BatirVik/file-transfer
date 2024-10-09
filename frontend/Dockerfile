@@ -2,9 +2,10 @@ FROM node:22.8.0-alpine3.20 AS build
 
 WORKDIR /app
 
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
 
 COPY package*.json ./
-ENV VITE_API_URL="http://localhost:8000"
 
 RUN npm install --frozen-lockfile
 

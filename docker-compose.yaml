@@ -12,10 +12,13 @@ services:
       - database
       - localstack
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
     container_name: file-transfer-fronted
     restart: always
-    env_file: ./configuration/.env.frontend
     ports:
       - 8080:8080
     depends_on:
