@@ -10,12 +10,8 @@ if TYPE_CHECKING:
     from types_aiobotocore_s3.type_defs import FileobjTypeDef
 
 from app.config import config
+
 from .session import session
-
-
-async def create_bucket(bucket_name: str) -> None:
-    async with get_s3_client() as client:
-        await client.create_bucket(Bucket=config.S3_BUCKET_NAME)
 
 
 @asynccontextmanager
@@ -28,6 +24,17 @@ async def get_s3_resource() -> AsyncGenerator["S3ServiceResource"]:
 async def get_s3_client() -> AsyncGenerator["S3Client"]:
     async with session.client("s3", endpoint_url=config.AWS_ENDPOINT_URL) as s3:
         yield s3
+
+
+async def create_bucket(bucket_name: str) -> None:
+    async with get_s3_client() as client:
+        await client.create_bucket(Bucket=config.S3_BUCKET_NAME)
+
+
+async def clear_bucket(bucket_name: str) -> None:
+    async with get_s3_resource() as resource:
+        bucket = await resource.Bucket(config.S3_BUCKET_NAME)
+        await bucket.objects.all().delete()
 
 
 async def upload_files(**files: "FileobjTypeDef") -> None:

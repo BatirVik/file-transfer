@@ -10,6 +10,7 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 os.environ["ENV"] = "test"
 
 from app.models.files import Folder
@@ -18,7 +19,7 @@ from app.config import config
 from app.main import app
 from app.database import session_factory, engine
 from app.models.base import Base
-from app.aws import s3
+from app.aws import logs, s3
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -32,11 +33,17 @@ async def db_life():
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def aws_life():
-    async with s3.get_s3_resource() as resource:
-        bucket = await resource.create_bucket(Bucket=config.S3_BUCKET_NAME)
-        yield
-        await bucket.objects.all().delete()
+async def aws_s3_life():
+    await s3.create_bucket(config.S3_BUCKET_NAME)
+    yield
+    await s3.clear_bucket(config.S3_BUCKET_NAME)
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def aws_logs_life():
+    await logs.create_log_group(config.LOGS_LOG_GROUP_NAME)
+    yield
+    await logs.delete_log_group(config.LOGS_LOG_GROUP_NAME)
 
 
 @pytest_asyncio.fixture
