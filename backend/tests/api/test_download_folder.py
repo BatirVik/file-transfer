@@ -15,8 +15,6 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 def test_download_folder(db: AsyncSession, client: TestClient, db_folder: Folder):
     resp = client.get(f"v1/folders/{db_folder.id}/download")
     assert resp.status_code == 200
-    # bytes = resp.read()
-    # input(bytes)
     file = BytesIO(resp.read())
     file.seek(0)
     with ZipFile(file, compression=ZIP_DEFLATED) as zip_file:
