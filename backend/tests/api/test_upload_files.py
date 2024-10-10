@@ -16,7 +16,7 @@ MOCK_DIR = Path(__file__).parent.parent / "mock"
 async def test_upload_files(db: AsyncSession, client: TestClient):
     filenames = set(os.listdir(MOCK_DIR))
     files = [("files", (name, open(MOCK_DIR / name, "rb"))) for name in filenames]
-    resp = client.post("v1/folders", files=files, data={"lifetime_minutes": "10"})
+    resp = client.post("v1/folders", files=files, data={"lifetimeMinutes": "10"})
     assert resp.status_code == 201
     resp_data = resp.json()
     assert resp_data.keys() == {"id", "expireAt", "files"}

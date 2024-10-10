@@ -71,6 +71,7 @@ async def upload_files(
         default=1440,
         ge=1,
         le=20160,
+        alias="lifetimeMinutes",
         validation_alias="lifetimeMinutes",
         description="After the folder expires, the folder and its files will no longer be available",
     ),
