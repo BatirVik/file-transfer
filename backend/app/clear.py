@@ -10,7 +10,7 @@ from app.database import session_factory
 from app.aws import s3
 
 
-async def clean_expired() -> None:
+async def clear_expired() -> None:
     stmt = select(File.id).join(Folder).where(Folder.expire_at < datetime.now(UTC))
     async with session_factory() as db:
         files_ids = await db.scalars(stmt)

@@ -10,12 +10,12 @@ from app.logger import logger, logger_middleware
 from app.config import config
 from app.aws import logs, s3
 from app.api import v1
-from app.clean import clean_expired
+from app.clear import clear_expired
 
 
 scheduler = BackgroundScheduler()
 trigger = CronTrigger(hour=1)
-scheduler.add_job(clean_expired, trigger)
+scheduler.add_job(clear_expired, trigger)
 
 
 @asynccontextmanager
