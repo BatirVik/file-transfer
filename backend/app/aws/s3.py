@@ -1,8 +1,10 @@
-from collections.abc import AsyncGenerator, AsyncIterator, Mapping
+from collections.abc import AsyncGenerator, AsyncIterator, Iterable, Mapping
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
+
+from botocore.exceptions import ClientError
 
 if TYPE_CHECKING:
     from types_aiobotocore_s3.client import S3Client
@@ -70,3 +72,15 @@ async def download_files_zip(filenames: Mapping[str, str]) -> AsyncIterator[byte
                     zip_stream.truncate()
     zip_stream.seek(0)
     yield zip_stream.read()
+
+
+async def delete_files(filenames: Iterable[str]) -> dict[str, ClientError | None]:
+    exceptions: dict[str, ClientError | None] = {}
+    async with get_s3_client() as client:
+        for filename in filenames:
+            try:
+                await client.delete_object(Bucket=config.S3_BUCKET_NAME, Key=filename)
+                exceptions[filename] = None
+            except ClientError as e:
+                exceptions[filename] = e
+    return exceptions
