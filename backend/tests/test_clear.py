@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.clean import clean_expired
+from app.clear import clear_expired
 from app.models.files import Folder
 from app.aws.s3 import get_s3_resource
 from app.config import config
@@ -14,7 +14,7 @@ from app.config import config
 async def test_clean_expired(
     db: AsyncSession, db_folder: Folder, db_expired_folder: Folder
 ):
-    await clean_expired()
+    await clear_expired()
 
     folder = await db.scalar(
         select(Folder).where(Folder.id == db_folder.id).limit(1),

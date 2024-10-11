@@ -22,11 +22,15 @@ async def clear_expired() -> None:
     for s3_filename, exception in exceptions.items():
         if exception is None:
             files_to_delete.append(UUID(s3_filename))
-        else:
-            logger.error(
-                "Failed to remove an expired file from aws: {!r}",
-                exception,
-            )
+            continue
+
+        logger.error(
+            "Failed to remove an expired file from aws: {!r}",
+            exception,
+        )
+        error_code = exception.response.get("Error", {}).get("Code")
+        if error_code == "NoSuchKey":
+            files_to_delete.append(UUID(s3_filename))
 
     async with session_factory() as db:
         for file_id in files_to_delete:
