@@ -1,5 +1,5 @@
 # File Transfer
-Full stack pet project: web service that allows you to share files with a link. \
+A full-stack project that allows users to upload files to AWS storage and generate expiring links for them. \
 See more at [Backend](./backend/README.md) & [Frontend](./frontend/README.md) docs.
 ## Quick Start
 ```bash
