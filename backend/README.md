@@ -39,7 +39,7 @@ Define the ENV variable
 ```bash
 export ENV=development
 ```
-Populate the configuration/**.env.dev**
+Create the configuration/**.env.dev**
 ```env
 DB_URL=...
 AWS_ACCESS_KEY=...
@@ -62,7 +62,7 @@ Run a localstack docker
 ```bash
 docker run -d -p 4566:4566 -d -e SERVICES=s3,logs -e AWS_ACCESS_KEY=test -e AWS_SECRET_KEY=test -e AWS_REGION_NAME=us-east-1 localstack/localstack
 ```
-Populate the configuration/**.env.test** file
+Create the configuration/**.env.test** file
 ```env
 DB_URL="postgresql+psycopg://test:test@localhost:5100/test"
 AWS_ACCESS_KEY="test"
