@@ -1,5 +1,4 @@
 import { formatSize } from "@/app/utils/format";
-import config from "@/app/config";
 
 interface FileInfo {
   id: string;
@@ -11,14 +10,15 @@ interface Props {
   files: FileInfo[];
 }
 
-const apiURL = config.API_URL;
-
 export default function FilesDownload({ files }: Props) {
   const filesItems = files.map((file) => (
     <li key={file.id} className="gap-4 flex items-center m-6">
       <div>{file.filename}</div>
       <div className="ml-auto text-nowrap">{formatSize(file.size)}</div>
-      <a href={`${apiURL}/v1/files/${file.id}/download`} download>
+      <a
+        href={`${process.env.NEXT_PUBLIC_API_URL}/v1/files/${file.id}/download`}
+        download
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

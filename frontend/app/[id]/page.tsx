@@ -1,31 +1,50 @@
+"use client";
+
 import PanelDownload from "@/app/components/PanelDownload";
 import FilesDownload from "@/app/components/FilesDonwload";
 import NotFound from "@/app/components/NotFound";
 import Loading from "@/app/components/Loading";
-import { Suspense, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
-const apiUrl: string = import.meta.env.VITE_API_URL;
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
-
-
-interface Props {
+interface FileInfo {
   id: string;
+  filename?: string;
+  size: number;
 }
 
-export default async function Download({ id }: Props) {
+export default function Page() {
+  const [filesInfo, setFilesInfo] = useState([] as FileInfo[]);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  const { id } = useParams<{ id: string }>();
 
-    console.error(`Failed: ${response.status} - ${await response.text()}`);
-  }
-  const filesInfo = data.files;
+  useEffect(() => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/v1/folders/${id}`;
+    fetch(url)
+      .then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          setFilesInfo(data.files);
+          setNotFound(false);
+          return;
+        }
+        console.error(`Failed: ${response.status} - ${await response.json()}`);
+        if ([404, 410, 422].includes(response.status)) {
+          setNotFound(true);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  });
 
-  function onDownloadClickHandler() {
+  function downloadFolder() {
     const a = document.createElement("a");
     document.body.appendChild(a);
-    a.href = `${apiUrl}/v1/folders/${id}/download`;
+    a.href = `${process.env.NEXT_PUBLIC_API_URL}/v1/folders/${id}/download`;
     a.click();
     a.remove();
   }
@@ -37,13 +56,16 @@ export default async function Download({ id }: Props) {
   const hideDownload = filesInfo.length === 0;
   return (
     <>
-      <PanelDownload
-        hideDownload={hideDownload}
-        onDownloadClick={onDownloadClickHandler}
-      />
-      <Suspense>
-        <FilesDownload files={filesInfo} />
-      </Suspense>
+      <div className="flex justify-center">
+        {isLoading && <Loading />}
+        <div style={{ width: 750 }}>
+          <PanelDownload
+            hideDownload={hideDownload}
+            onDownloadClick={downloadFolder}
+          />
+          <FilesDownload files={filesInfo} />
+        </div>
+      </div>
     </>
   );
 }

@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 w-screen h-screen flex justify-center items-center flex-col font-bold">
-      <h1 className="text-4xl mb-4">Folder not found</h1>
-      <p>
-        {"Go to "}
-        <Link to="/" className="text-blue-500 underline ">
-          upload page
-        </Link>
-      </p>
+    <div className="w-screen h-screen flex-col flex items-center justify-center">
+      <h1 className="text-center text-2xl mb-2 font-bold">Folder not found!</h1>
+      <Link
+        href="/"
+        className="bg-slate-700 hover:bg-slate-500 transition-colors p-1 rounded-md text-white"
+      >
+        Go to upload page
+      </Link>
     </div>
   );
 }

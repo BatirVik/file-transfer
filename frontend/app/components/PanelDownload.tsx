@@ -1,12 +1,12 @@
 import { MouseEventHandler } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 interface Props {
   onDownloadClick: MouseEventHandler;
   hideDownload: boolean;
 }
 
-export default function DownloadUpload({
+export default function PanelDownload({
   onDownloadClick,
   hideDownload,
 }: Props) {
@@ -17,7 +17,7 @@ export default function DownloadUpload({
     <div className="flex text-white rounded-xl m-4 overflow-hidden h-12 bg-slate-500">
       <div className="flex flex-1 bg-slate-700 p-2 rounded-r-xl">
         <Link
-          to="/"
+          href="/"
           className="text-xl mr-auto flex items-center justify-center font-bold"
         >
           FileTransfer

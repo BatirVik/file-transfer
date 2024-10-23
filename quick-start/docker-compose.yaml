@@ -16,11 +16,11 @@ services:
       context: .././frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=http://localhost:8000
-    container_name: file-transfer-fronted
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
+    container_name: file-transfer-frontend
     restart: always
     ports:
-      - 8080:8080
+      - 3000:3000
     depends_on:
       - backend
   database:
@@ -38,8 +38,8 @@ services:
     restart: always
     image: localstack/localstack:3.8
     ports:
-      - 127.0.0.1:4566:4566 # LocalStack Gateway
-      - 127.0.0.1:4510-4559:4510-4559 # external services port range
+      - 127.0.0.1:4566:4566
+      - 127.0.0.1:4510-4559:4510-4559
     env_file: .env.localstack
     volumes:
       - localstack_data:/var/lib/localstack

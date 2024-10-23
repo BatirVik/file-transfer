@@ -1,12 +1,12 @@
 "use client";
 
 import FilesUpload from "@/app/components/FilesUpload";
-import Loading from "@/app/components/Loading";
 import PanelUpload from "@/app/components/PanelUpload";
 
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { redirect } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import Loading from "./components/Loading";
 
 interface Files {
   [key: string]: File;
@@ -14,7 +14,7 @@ interface Files {
 
 export default function Page() {
   const [selectedFiles, setSelectedFiles] = useState({} as Files);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function onFilesChoose(event: ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
@@ -49,27 +49,24 @@ export default function Page() {
 
   async function onUploadClick(event: MouseEvent) {
     event.preventDefault();
-    setIsUploading(true);
+    setIsLoading(true);
     try {
       const id = await uploadFiles();
       redirect(`/${id}`);
-    } catch (err) {
-      alert("Failed");
-      throw err;
     } finally {
-      setIsUploading(false);
+      setIsLoading(false);
     }
   }
 
   const hideUpload = Object.keys(selectedFiles).length === 0;
   return (
     <div className="flex justify-center">
+      {isLoading && <Loading />}
       <div style={{ width: 750 }}>
         <PanelUpload
           onFilesChoose={onFilesChoose}
           onUploadClick={onUploadClick}
-          hideUpload={hideUpload}
-          isUploading={isUploading}
+          hideUpload={hideUpload || isLoading}
         />
         <FilesUpload files={selectedFiles} setFiles={setSelectedFiles} />
       </div>
