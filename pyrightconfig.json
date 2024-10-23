@@ -1,8 +1,0 @@
-{
-  "venvPath": "/Users/batir/Library/Caches/pypoetry/virtualenvs/",
-  "venv": "file-transfer-backend-54pCGt7Y-py3.12",
-  "reportUnusedFunction": true, // Reports unused functions
-  "reportUnusedType": true, // Reports unused types
-  "reportUnusedVariable": true, // Reports unused variables
-  "reportUnusedImport": true // Reports unused imports
-}
