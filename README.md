@@ -5,5 +5,5 @@ See more at [Backend](./backend/README.md) & [Frontend](./frontend/README.md) do
 ```bash
 docker-compose -f ./quick-start/docker-compose.yaml up --build
 ```
-Frontend: http://localhost:8080 \
+Frontend: http://localhost:3000 \
 Backend: http://localhost:8000
