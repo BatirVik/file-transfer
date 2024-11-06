@@ -1,4 +1,6 @@
-import { ChangeEventHandler, MouseEventHandler } from "react";
+"use client"
+
+import {ChangeEventHandler, MouseEventHandler} from "react";
 import Link from "next/link";
 
 interface Props {
@@ -7,11 +9,12 @@ interface Props {
   hideUpload: boolean;
 }
 
-export default function PanelUpload({
-  onUploadClick,
-  onFilesChoose,
-  hideUpload,
-}: Props) {
+export default function PanelUpload(
+  {
+    onUploadClick,
+    onFilesChoose,
+    hideUpload,
+  }: Props) {
   return (
     <div className="flex text-white rounded-xl m-4 overflow-hidden h-12 bg-slate-500">
       <div className="flex flex-1 bg-slate-700 p-2 rounded-r-xl">
@@ -41,7 +44,7 @@ export default function PanelUpload({
         type="submit"
         onClick={onUploadClick}
         className="ml-auto flex items-center justify-center p-2 transition-all"
-        style={hideUpload ? { width: 0, padding: 0 } : {}}
+        style={hideUpload ? {width: 0, padding: 0} : {}}
         disabled={hideUpload}
       >
         <svg
